@@ -13,9 +13,15 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
-  // 🔹 RAG用：spec.md を読み込む
-  const filePath = path.join(process.cwd(), 'docs', 'i-shin_CompanyInfo.md');
-  const context = fs.readFileSync(filePath, 'utf-8');
+  // 🔹 docs フォルダ内のすべての .md ファイルを読み込む
+  const docsDir = path.join(process.cwd(), 'docs');
+  const filenames = fs.readdirSync(docsDir).filter(f => f.endsWith('.md'));
+
+  let context = '';
+  filenames.forEach(filename => {
+    const content = fs.readFileSync(path.join(docsDir, filename), 'utf-8');
+    context += `\n\n【${filename}】\n${content}`;
+  });
 
   // 🔹 ユーザーの直近の質問を取得
   const userMessage = messages[messages.length - 1]?.content || '';
@@ -24,7 +30,7 @@ export default async function handler(req, res) {
   const promptMessages = [
     {
       role: 'system',
-      content: `以下は、i-shin株式会社に関する社内情報です。この内容を元に、質問に答えてください。\n\n${context}`,
+      content: `以下は、i-shin株式会社に関する複数の社内情報です。必要に応じて、ファイル名を参照しながら質問に答えてください。\n${context}`,
     },
     {
       role: 'user',
