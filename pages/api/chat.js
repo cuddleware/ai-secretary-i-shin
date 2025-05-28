@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   // 🔹 RAG用：spec.md を読み込む
-  const filePath = path.join(process.cwd(), 'docs', 'spec.md');
+  const filePath = path.join(process.cwd(), 'docs', 'i-shin_CompanyInfo.md');
   const context = fs.readFileSync(filePath, 'utf-8');
 
   // 🔹 ユーザーの直近の質問を取得
